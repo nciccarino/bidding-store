@@ -61,6 +61,7 @@ function queryProducts() {
 
 //asks user to pick an item
 function queryItem() {
+	console.log(""); 
 	inquirer.prompt([
 		{
 			name: "item",
@@ -72,13 +73,22 @@ function queryItem() {
 			connection.query("SELECT * FROM products WHERE id = ?", [user.item], function(err, res) {
 				if (err) throw err;
 				for (var i = 0; i < res.length; i++) {
-      	console.log("\n " + res[i].product_name + " | " + res[i].department_name + " | " + res[i].price + " | " + res[i].stock_quantity + " | ");
-    		} 
+      	console.log("\n " + res[i].product_name + " | " + res[i].department_name + " | " + res[i].price + " | " + res[i].stock_quantity + " | "); 
     		console.log(""); 
-    		confirm(); 
-			}); 
-		});
-	});
+	    		inquirer.prompt([
+						{
+							name: "quantity",
+							type: "input",
+							message: "How many " + res[i].product_name + "(s) would you like?" 
+						}
+					]).then(function(answer) {
+						console.log(answer.quantity); 
+					});
+    		} //for statement
+			}); //connection query
+		}); //connection connect
+	}); // then function 
+
 }; //end queryItem
 
 //confirm if this is the correct item 
@@ -93,14 +103,10 @@ var confirm = function() {
 
 	]).then(function(user){
 		if (user.yes) {
-			quantity(); 
+			
 		}
 		else {
 			queryItem();  
 		}
 	}); 
 }; //end confirm
-
-function quantity() {
-	console.log("Quantity"); 
-}
