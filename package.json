@@ -1,0 +1,23 @@
+{
+  "name": "bidding-store",
+  "version": "1.0.0",
+  "description": "\"bidding-store\"",
+  "main": "bamazonCustomer.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nciccarino/bidding-store.git"
+  },
+  "author": "Nick Ciccarino",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nciccarino/bidding-store/issues"
+  },
+  "homepage": "https://github.com/nciccarino/bidding-store#readme",
+  "dependencies": {
+    "inquirer": "^3.1.1",
+    "mysql": "^2.13.0"
+  }
+}
