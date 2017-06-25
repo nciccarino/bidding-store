@@ -21,6 +21,7 @@ connection.connect(function(err) {
 	start(); 
 }); 
 
+//asks user to either look at a list of available items or pick one for purchase 
 function start() {
 	console.log(""); 
 	inquirer.prompt([
@@ -38,7 +39,7 @@ function start() {
 			queryProducts(); 
 			break;
 			case "Purchase an Item":
-
+			queryItem();  
 			break; 
 		}
 	}); 
@@ -57,3 +58,49 @@ function queryProducts() {
     start(); 
   });
 }; 
+
+//asks user to pick an item
+function queryItem() {
+	inquirer.prompt([
+		{
+			name: "item",
+			type: "input",
+			message: "Which item ID would you like to select?"
+		}
+	]).then(function(user) {
+		connection.connect(function(err) {
+			connection.query("SELECT * FROM products WHERE id = ?", [user.item], function(err, res) {
+				if (err) throw err;
+				for (var i = 0; i < res.length; i++) {
+      	console.log("\n " + res[i].product_name + " | " + res[i].department_name + " | " + res[i].price + " | " + res[i].stock_quantity + " | ");
+    		} 
+    		console.log(""); 
+    		confirm(); 
+			}); 
+		});
+	});
+}; //end queryItem
+
+//confirm if this is the correct item 
+var confirm = function() {
+	inquirer.prompt([
+
+		{
+			type: "confirm", 
+			message: "Is this correct?", 
+			name: "yes"
+		}
+
+	]).then(function(user){
+		if (user.yes) {
+			quantity(); 
+		}
+		else {
+			queryItem();  
+		}
+	}); 
+}; //end confirm
+
+function quantity() {
+	console.log("Quantity"); 
+}
