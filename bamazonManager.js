@@ -18,8 +18,43 @@ connection.connect(function(err) {
 	if (err) throw err; 
 	console.log("\n Bamazon Manager Page"); 
 	console.log(""); 
-	startManager(); 
+	passwordEntry(); 
 }); 
+
+var attempts = 4;
+
+//password entry
+function passwordEntry() {
+	inquirer.prompt([
+		{
+    type: "input",
+    name: "name",
+    message: "Please enter your User Name"
+  	},
+		{
+			type: "password",
+			name: "myPassword", 
+			message: "Please enter your Password"
+		}
+	]).then(function(user) {
+		if (user.myPassword === "myPassword") {
+			startManager(); 
+		}
+		else { 
+			if (attempts > 0) {
+				console.log("\n I'm sorry, your password was incorrect.");
+				console.log(""); 
+				attempts--; 
+				passwordEntry(); 
+			}
+			else if (attempts === 0){
+				console.log("\n Sorry, you are out of attempts, please try again later.");
+				console.log(""); 
+				process.exit(0); 
+			}
+		}
+	})
+}; 
 
 function startManager() {
 	console.log(""); 
