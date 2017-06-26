@@ -14,7 +14,7 @@ CREATE TABLE products(
 
 INSERT INTO products (product_name, department_name, price, stock_quantity)
 VALUES ("iPhone 7", "Electronics", 649.00, 50),
-("Smart Refrigerator", "Appliances", 2508.10, 10), 
+("Smart Refrigerator", "Appliances", 2508.10, 5), 
 ("Tempurpedic mattress", "Furniture", 1299.98, 20), 
 ("Nike Football", "Sports_&_Outdoor", 25.50, 100), 
 ("Elliptical Machine", "Fitness", 899.99, 5), 

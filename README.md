@@ -1,10 +1,12 @@
-# bidding-store
+# online-store
 
-Nick Ciccarino
+## Bamazon
 
-Student 
-Rutgers University
+### Nick Ciccarino
 
-Rutgers Coding Bootcamp 
+### Student 
+### Rutgers University
 
-*** Password for both pages is myPassword ***
+### Rutgers Coding Bootcamp 
+
+#### *** Password for both pages is myPassword ***

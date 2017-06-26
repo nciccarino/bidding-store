@@ -18,7 +18,7 @@ connection.connect(function(err) {
 	if (err) throw err; 
 	console.log("\n Bamazon Manager Page"); 
 	console.log(""); 
-	passwordEntry(); 
+	passwordEntry(); //wehre everything begins
 }); 
 
 var attempts = 4;
@@ -38,24 +38,25 @@ function passwordEntry() {
 		}
 	]).then(function(user) {
 		if (user.myPassword === "myPassword") {
-			startManager(); 
+			startManager(); //starts program
 		}
 		else { 
 			if (attempts > 0) {
 				console.log("\n I'm sorry, your password was incorrect.");
 				console.log(""); 
 				attempts--; 
-				passwordEntry(); 
+				passwordEntry(); //goes back to password entry if incorrect
 			}
 			else if (attempts === 0){
 				console.log("\n Sorry, you are out of attempts, please try again later.");
 				console.log(""); 
-				process.exit(0); 
+				process.exit(0); //exits program after certain amount wrong
 			}
 		}
 	})
 }; 
 
+//starts program 
 function startManager() {
 	console.log(""); 
 	inquirer.prompt([
@@ -75,15 +76,15 @@ function startManager() {
 			case "Find a Product by Department":
 			queryDepts();
 			break; 
-			// case "View Low Inventory":
-			 
-			// break; 
-			// case "Add to Inventory"
-
-			// break; 
-			// case "Add New Product"
-
-			// break; 
+			case "View Low Inventory":
+			lowInventory(); 
+			break; 
+			case "Add to Inventory":
+			addInventory(); 
+			break; 
+			case "Add New Product": 
+			addNewItem();
+			break; 
 			case "Exit Bamazon":
 			exit(); 
 			break; 
@@ -101,7 +102,7 @@ function queryProducts() {
       console.log("\n " + res[i].id + " | " + res[i].product_name + " | " + res[i].department_name + " | " + res[i].price + " | " + res[i].stock_quantity + " | ");
     }
     console.log("\n-----------------------------------");
-    startManager(); 
+    startManager(); //goes back to start
   });
 }; 
 
@@ -119,19 +120,150 @@ function queryDepts() {
 
 	]).then(function(user) {
 		connection.connect(function(err){
-            connection.query("SELECT * FROM products WHERE department_name = ?", [user.name], function(err, res){
-                if (err) throw err;
-                console.log("\n" + user.name);
-                for (var i = 0; i < res.length; i++) {
-      						console.log("\n " + res[i].id + " | " + res[i].product_name + " | " + res[i].price + " | " + res[i].stock_quantity + " | ");
-    						}
-    						console.log("\n-----------------------------------");
-    						startManager(); 
-            });
-        });
+	      connection.query("SELECT * FROM products WHERE department_name = ?", [user.name], function(err, res){
+	        if (err) throw err;
+	          console.log("\n" + user.name);
+	          for (var i = 0; i < res.length; i++) {
+	      		console.log("\n " + res[i].id + " | " + res[i].product_name + " | " + res[i].price + " | " + res[i].stock_quantity + " | ");
+	    		}
+	    		console.log("\n-----------------------------------");
+	    		startManager(); //goes back to start
+	      });
+    	});
 	});
 }; 
 
+//low inventory 
+function lowInventory() {
+	connection.connect(function(err){
+	    connection.query("SELECT * FROM products WHERE stock_quantity = 5", function(err, res){
+	     	if (err) throw err;
+	        for (var i = 0; i < res.length; i++) {
+	      	console.log("\n " + res[i].id + " | " + res[i].department_name + " | " + res[i].product_name + " | " + res[i].price + " | " + res[i].stock_quantity + " | ");
+	    		}
+	    	console.log("\n-----------------------------------");
+	    	startManager(); //goes back to start
+	    });
+  	});
+}; 
+
+//add inventory
+function addInventory() {
+	console.log(""); 
+	inquirer.prompt([
+		{
+			name: "item",
+			type: "input",
+			message: "Which item ID would you like to select?"
+		}
+	]).then(function(user) {
+		connection.connect(function(err) {
+			connection.query("SELECT * FROM products WHERE id = ?", [user.item], function(err, res) {
+				if (err) throw err;
+				var chosenItem;
+				for (var i = 0; i < res.length; i++) {
+				console.log("\n ID | Product | Department | Price | Quantity in Stock |");
+      			console.log("\n " + res[i].product_name + " | " + res[i].department_name + " | " + res[i].price + " | " + res[i].stock_quantity + " | "); 
+    			console.log(""); 
+    			chosenItem = res[i]; 
+	    		inquirer.prompt([
+						{
+							name: "quantity",
+							type: "input",
+							message: "How many " + chosenItem.product_name + "(s) would you like to add?" 
+						},
+						{
+							type: "confirm", 
+							message: "Is this correct? By selecting Yes, you will be adding to your inventory.", 
+							name: "yes"
+						}
+					]).then(function(answer) {
+						var x = chosenItem.stock_quantity; 
+						var y = Number(answer.quantity); //changing the string to a number
+						var z = x + y; 
+						if (answer.yes) {
+							connection.query(
+								"UPDATE products SET ? WHERE ?",
+								[
+									{
+										stock_quantity: z 
+									},
+									{
+										id: chosenItem.id 
+									}
+								],
+								function(err) {
+									//if (err) throw err;
+									console.log("\n Inventory Added successfully!"); 
+									console.log("\n Total Inventory for " + chosenItem.product_name + " is: " + z); 
+									startManager(); // back to start
+								}
+							);
+						} //answer yes
+						else {
+							startManager(); //back to start
+						}
+					}); //second then function 
+    			} //for statement
+			}); //connection query
+		}); //connection connect
+	}); // then function 
+
+}; //end addInventory
+
+// function to handle posting new items up for sale
+function addNewItem() {
+  	inquirer.prompt([
+	    {
+	      name: "item",
+	      type: "input",
+	      message: "What is the Product Name of the new item you would like to submit?"
+	    },
+	    {
+	      name: "department",
+	      type: "rawlist",
+	      message: "Which Department would you like to place this item in?", 
+	      choices: ["Appliances", "Electronics", "Fitness", "Furniture", "Patio,_Lawn_&_Garden", "Sports_&_Outdoor"]
+	    },
+	    {
+	      name: "price",
+	      type: "input",
+	      message: "What Price would you like your new item to be?"
+	    }, 
+	    {
+	      name: "quantity",
+	      type: "input", 
+	      message: "What is the new item's current Stock Quantity?"
+	    },
+	    {
+		  type: "confirm", 
+		  message: "Is this correct? By selecting Yes, you will create a new Item.", 
+		  name: "yes"
+		}
+    ]).then(function(answer) { 
+    	var newPrice = Number(answer.price);
+    	var newQuantity = Number(answer.quantity); 
+      	if (answer.yes) {
+      		connection.query("INSERT INTO products SET ?",
+        		{
+          			product_name: answer.item,
+          			department_name: answer.department,
+          			price: newPrice,
+          			stock_quantity: newQuantity
+        		}, function(err) {
+          			if (err) throw err;
+          			console.log("Your item was created successfully!");
+          			startManager(); //back to start
+        		}
+      		); //end connection function
+      	}
+      	else {
+      		startManager(); //back to start
+      	}
+    }); //end then function
+}; //end addNewItem
+
+//exit
 function exit() {
 	inquirer.prompt([
 		{
@@ -149,4 +281,4 @@ function exit() {
 			startManager(); 
 		}
 	});
-}
+}; // end exit 

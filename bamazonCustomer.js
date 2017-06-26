@@ -18,7 +18,7 @@ connection.connect(function(err) {
 	if (err) throw err; 
 	console.log("\n Welcome to Bamazon!"); 
 	console.log(""); 
-	passwordEntry(); 
+	passwordEntry(); //where everything begins
 }); 
 
 var attempts = 4; 
@@ -37,19 +37,19 @@ function passwordEntry() {
 		}
 	]).then(function(user) {
 		if (user.myPassword === "myPassword") {
-			start(); 
+			start(); //starts program
 		}
 		else { 
 			if (attempts > 0) {
 				console.log("\n I'm sorry, your password was incorrect.");
 				console.log(""); 
 				attempts--; 
-				passwordEntry(); 
+				passwordEntry(); //goes back to password prompt if incorrect
 			}
 			else if (attempts === 0){
 				console.log("\n Sorry, you are out of attempts, please try again later.");
 				console.log(""); 
-				process.exit(0); 
+				process.exit(0); //exits after certain amount wrong
 			}
 		}
 	})
@@ -102,25 +102,25 @@ function queryProducts() {
 //find products by Department
 function queryDepts() {
 	console.log("\n Departments");
-	console.log("\n Appliances | Electronics | Fitness | Furniture | Patio,_Lawn_&_Garden | Sports_&_Outdoor |")
 	inquirer.prompt([
 
-	{
-		type: "input", 
-		name: "name",
-		message: "Choose a Department"
-	}
+		{
+	      name: "department",
+	      type: "list",
+	      message: "Which Department would you like to place this item in?", 
+	      choices: ["Appliances", "Electronics", "Fitness", "Furniture", "Patio,_Lawn_&_Garden", "Sports_&_Outdoor"]
+	    },
 
 	]).then(function(user) {
 		connection.connect(function(err){
-            connection.query("SELECT * FROM products WHERE department_name = ?", [user.name], function(err, res){
+            connection.query("SELECT * FROM products WHERE department_name = ?", [user.department], function(err, res){
                 if (err) throw err;
-                console.log("\n" + user.name);
+                console.log("\n" + user.department);
                 for (var i = 0; i < res.length; i++) {
-      						console.log("\n " + res[i].id + " | " + res[i].product_name + " | " + res[i].price + " | " + res[i].stock_quantity + " | ");
-    						}
-    						console.log("\n-----------------------------------");
-    						start(); 
+      			console.log("\n " + res[i].id + " | " + res[i].product_name + " | " + res[i].price + " | " + res[i].stock_quantity + " | ");
+    			}
+    			console.log("\n-----------------------------------");
+    			start(); //back to start
             });
         });
 	});
@@ -180,11 +180,11 @@ function queryItem() {
 							else {
 								console.log("\n Sorry! not enough " + chosenItem.product_name + "(s) in stock!");
 								console.log("\n We have " + chosenItem.stock_quantity + " left."); 
-								start(); 
+								start(); //back to start
 							}
 						} //answer yes
 						else {
-							start(); 
+							start(); //back to start
 						}
 					}); //second then function 
     		} //for statement
@@ -212,4 +212,4 @@ function exit() {
 			start(); 
 		}
 	});
-}
+}; 
