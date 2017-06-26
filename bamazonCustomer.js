@@ -30,7 +30,7 @@ function start() {
 			type: "list", 
 			name: "start", 
 			message: "Choose an Option to Begin", 
-			choices: ["Find a Product", "Purchase an Item"]
+			choices: ["Find a Product", "Purchase an Item", "Exit Bamazon"]
 		}
 
 	]).then(function(user) {
@@ -40,6 +40,9 @@ function start() {
 			break;
 			case "Purchase an Item":
 			queryItem();  
+			break; 
+			case "Exit Bamazon":
+			exit(); 
 			break; 
 		}
 	}); 
@@ -72,18 +75,54 @@ function queryItem() {
 		connection.connect(function(err) {
 			connection.query("SELECT * FROM products WHERE id = ?", [user.item], function(err, res) {
 				if (err) throw err;
+				var chosenItem;
 				for (var i = 0; i < res.length; i++) {
+				console.log("\n ID | Product | Department | Price | Quantity in Stock |");
       	console.log("\n " + res[i].product_name + " | " + res[i].department_name + " | " + res[i].price + " | " + res[i].stock_quantity + " | "); 
     		console.log(""); 
+    		chosenItem = res[i]; 
 	    		inquirer.prompt([
 						{
 							name: "quantity",
 							type: "input",
-							message: "How many " + res[i].product_name + "(s) would you like?" 
+							message: "How many " + chosenItem.product_name + "(s) would you like?" 
+						},
+						{
+							type: "confirm", 
+							message: "Is this correct? By selecting Yes, you will be placing your order", 
+							name: "yes"
 						}
 					]).then(function(answer) {
-						console.log(answer.quantity); 
-					});
+						if (answer.yes) {
+							if (chosenItem.stock_quantity >= parseInt(answer.quantity)) {
+								connection.query(
+									"UPDATE products SET ? WHERE ?",
+									[
+										{
+											stock_quantity: chosenItem.stock_quantity - answer.quantity
+										},
+										{
+											id: chosenItem.id 
+										}
+									],
+									function(err) {
+										if (err) throw err;
+										console.log("\n Order placed successfully!"); 
+										console.log("\n Your Total is: $" + chosenItem.price * answer.quantity); 
+										start();
+									}
+								);
+							}
+							else {
+								console.log("\n Sorry! not enough " + chosenItem.product_name + "(s) in stock!");
+								console.log("\n We have " + chosenItem.stock_quantity + " left."); 
+								start(); 
+							}
+						} //answer yes
+						else {
+							start(); 
+						}
+					}); //second then function 
     		} //for statement
 			}); //connection query
 		}); //connection connect
@@ -91,22 +130,22 @@ function queryItem() {
 
 }; //end queryItem
 
-//confirm if this is the correct item 
-var confirm = function() {
+//exit function
+function exit() {
 	inquirer.prompt([
-
 		{
-			type: "confirm", 
-			message: "Is this correct?", 
-			name: "yes"
+			type: "confirm",
+			name: "yes",
+			message: "\n Would you like to leave Bamazon?" + "\n By clicking Yes you will Exit the page." + "\n By clicking No you can continue shopping."
 		}
-
-	]).then(function(user){
+	]).then(function(user) {
 		if (user.yes) {
-			
+			console.log("\n Come Back Soon!");
+			process.exit(0); 
 		}
 		else {
-			queryItem();  
+			console.log("\n Glad to have you back!"); 
+			start(); 
 		}
-	}); 
-}; //end confirm
+	});
+}
