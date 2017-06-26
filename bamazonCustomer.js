@@ -52,7 +52,7 @@ function start() {
 }; 
 
 //queries current product list
-function queryProducts() {
+var queryProducts = function() {
   connection.query("SELECT * FROM products", function(err, res) {
   	if (err) throw err;
   	console.log("\n ID | Product | Department | Price | Quantity in Stock |"); 
@@ -66,7 +66,7 @@ function queryProducts() {
 }; 
 
 //find products by Department
-function queryDepts() {
+var queryDepts = function() {
 	console.log("\n Departments");
 	console.log("\n Appliances | Electronics | Fitness | Furniture | Patio,_Lawn_&_Garden | Sports_&_Outdoor |")
 	inquirer.prompt([
@@ -161,7 +161,7 @@ function queryItem() {
 }; //end queryItem
 
 //exit function
-function exit() {
+var exit = function() {
 	inquirer.prompt([
 		{
 			type: "confirm",
