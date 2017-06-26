@@ -30,7 +30,7 @@ function start() {
 			type: "list", 
 			name: "start", 
 			message: "Choose an Option to Begin", 
-			choices: ["Find a Product", "Purchase an Item", "Exit Bamazon"]
+			choices: ["Find a Product", "Find a Product by Department", "Purchase an Item", "Exit Bamazon"]
 		}
 
 	]).then(function(user) {
@@ -38,6 +38,9 @@ function start() {
 			case "Find a Product": 
 			queryProducts(); 
 			break;
+			case "Find a Product by Department":
+			queryDepts();
+			break; 
 			case "Purchase an Item":
 			queryItem();  
 			break; 
@@ -57,9 +60,36 @@ function queryProducts() {
     for (var i = 0; i < res.length; i++) {
       console.log("\n " + res[i].id + " | " + res[i].product_name + " | " + res[i].department_name + " | " + res[i].price + " | " + res[i].stock_quantity + " | ");
     }
-    console.log("-----------------------------------");
+    console.log("\n-----------------------------------");
     start(); 
   });
+}; 
+
+//find products by Department
+function queryDepts() {
+	console.log("\n Departments");
+	console.log("\n Appliances | Electronics | Fitness | Furniture | Patio,_Lawn_&_Garden | Sports_&_Outdoor |")
+	inquirer.prompt([
+
+	{
+		type: "input", 
+		name: "name",
+		message: "Choose a Department"
+	}
+
+	]).then(function(user) {
+		connection.connect(function(err){
+            connection.query("SELECT * FROM products WHERE department_name = ?", [user.name], function(err, res){
+                if (err) throw err;
+                console.log("\n" + user.name);
+                for (var i = 0; i < res.length; i++) {
+      						console.log("\n " + res[i].id + " | " + res[i].product_name + " | " + res[i].price + " | " + res[i].stock_quantity + " | ");
+    						}
+    						console.log("\n-----------------------------------");
+    						start(); 
+            });
+        });
+	});
 }; 
 
 //asks user to pick an item
