@@ -109,27 +109,27 @@ function queryProducts() {
 //find products by Department
 function queryDepts() {
 	console.log("\n Departments");
-	console.log("\n Appliances | Electronics | Fitness | Furniture | Patio,_Lawn_&_Garden | Sports_&_Outdoor |")
 	inquirer.prompt([
 
-	{
-		type: "input", 
-		name: "name",
-		message: "Choose a Department"
-	}
+		{
+	      name: "department",
+	      type: "list",
+	      message: "Which Department would you like to place this item in?", 
+	      choices: ["Appliances", "Electronics", "Fitness", "Furniture", "Patio,_Lawn_&_Garden", "Sports_&_Outdoor"]
+	    },
 
 	]).then(function(user) {
 		connection.connect(function(err){
-	      connection.query("SELECT * FROM products WHERE department_name = ?", [user.name], function(err, res){
-	        if (err) throw err;
-	          console.log("\n" + user.name);
-	          for (var i = 0; i < res.length; i++) {
-	      		console.log("\n " + res[i].id + " | " + res[i].product_name + " | " + res[i].price + " | " + res[i].stock_quantity + " | ");
-	    		}
-	    		console.log("\n-----------------------------------");
-	    		startManager(); //goes back to start
-	      });
-    	});
+            connection.query("SELECT * FROM products WHERE department_name = ?", [user.department], function(err, res){
+                if (err) throw err;
+                console.log("\n" + user.department);
+                for (var i = 0; i < res.length; i++) {
+      			console.log("\n " + res[i].id + " | " + res[i].product_name + " | " + res[i].price + " | " + res[i].stock_quantity + " | ");
+    			}
+    			console.log("\n-----------------------------------");
+    			start(); //back to start
+            });
+        });
 	});
 }; 
 
