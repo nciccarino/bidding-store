@@ -127,7 +127,7 @@ function queryDepts() {
       			console.log("\n " + res[i].id + " | " + res[i].product_name + " | " + res[i].price + " | " + res[i].stock_quantity + " | ");
     			}
     			console.log("\n-----------------------------------");
-    			start(); //back to start
+    			startManager(); //back to start
             });
         });
 	});
